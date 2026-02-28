@@ -1,26 +1,230 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ─── Stitch Palette ─────────────────────────────────────── */
+  --brand: #0df2f2;
+  --brand-dark: #051111;
+  --brand-accent: #123b3b;
+  --brand-glow: rgba(13, 242, 242, 0.4);
+  --brand-subtle: rgba(13, 242, 242, 0.08);
+
+  /* Backgrounds */
+  --bg-primary: #050505;
+  --bg-secondary: #0a1111;
+  --bg-card: rgba(5, 17, 17, 0.85);
+  --bg-card-hover: rgba(18, 59, 59, 0.3);
+
+  /* Text */
+  --text-primary: #e0fafa;
+  --text-secondary: rgba(13, 242, 242, 0.6);
+  --text-muted: rgba(13, 242, 242, 0.35);
+
+  /* Borders */
+  --border-subtle: rgba(13, 242, 242, 0.12);
+  --border-glow: rgba(13, 242, 242, 0.35);
+
+  /* Accents (keep for badges) */
+  --accent-primary: #0df2f2;
+  --accent-green: #22c55e;
+  --accent-purple: #8b5cf6;
+  --accent-cyan: #0df2f2;
+
+  /* Gradients */
+  --gradient-hero: radial-gradient(circle at center, #0a1f1f 0%, #050505 100%);
+  --gradient-card: linear-gradient(135deg, rgba(13,242,242,0.04), rgba(13,242,242,0.01));
+  --gradient-cta: linear-gradient(135deg, #0df2f2, #09c4c4);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #050505;
+  background-image: var(--gradient-hero);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Glassmorphism ──────────────────────────────────────────── */
+
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+
+.glass-hover:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow);
+  box-shadow: 0 0 30px rgba(13, 242, 242, 0.08);
+}
+
+/* ─── Talos Brand Title ──────────────────────────────────────── */
+
+.talos-title {
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow: 0 0 15px var(--brand-glow);
+  color: var(--brand);
+}
+
+/* ─── Glow Effects ───────────────────────────────────────────── */
+
+.glow-brand {
+  box-shadow:
+    0 0 20px rgba(13, 242, 242, 0.2),
+    0 0 60px rgba(13, 242, 242, 0.06);
+}
+
+.glow-text {
+  text-shadow: 0 0 40px rgba(13, 242, 242, 0.3);
+}
+
+/* ─── Button System ──────────────────────────────────────────── */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--brand);
+  border: 1px solid var(--brand);
+  border-radius: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: rgba(13, 242, 242, 0.1);
+  box-shadow: 0 0 20px rgba(13, 242, 242, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-outline:hover {
+  background: rgba(13, 242, 242, 0.06);
+  border-color: var(--brand);
+  transform: translateY(-1px);
+}
+
+/* ─── Animations ─────────────────────────────────────────────── */
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(13, 242, 242, 0.15); }
+  50% { box-shadow: 0 0 30px rgba(13, 242, 242, 0.3); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.glow-effect {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ─── Tech Border Corners ────────────────────────────────────── */
+
+.tech-corners {
+  position: relative;
+}
+
+.tech-corners::before,
+.tech-corners::after,
+.tech-corner-bl,
+.tech-corner-br {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--brand);
+  opacity: 0.2;
+  content: '';
+  pointer-events: none;
+}
+
+.tech-corners::before {
+  top: 0; left: 0;
+  border-top: 2px solid; border-left: 2px solid;
+}
+
+.tech-corners::after {
+  top: 0; right: 0;
+  border-top: 2px solid; border-right: 2px solid;
+}
+
+/* ─── Section Spacing ────────────────────────────────────────── */
+
+section {
+  padding: 80px 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ─── Input Styling ──────────────────────────────────────────── */
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus {
+  border-color: var(--brand) !important;
+  outline: none;
+  box-shadow: 0 0 12px rgba(13, 242, 242, 0.15);
 }

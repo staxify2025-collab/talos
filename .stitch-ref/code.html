@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Talos | Modern Tech Brand</title>
+<!-- Load Google Fonts: Space Grotesk -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#0df2f2',
+              dark: '#051111',
+              accent: '#123b3b'
+            }
+          },
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+          },
+          borderRadius: {
+            'custom': '8px',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="typography-and-effects">
+    /* Custom styling for the 'Greek Tech' font feel */
+    .talos-title {
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      /* Using text-shadow to create a subtle neon glow effect */
+      text-shadow: 0 0 15px rgba(13, 242, 242, 0.4);
+    }
+    
+    /* Animation for the central mark */
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+    
+    .glow-effect {
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    /* Decorative corner lines to enhance the techy feel */
+    .tech-border-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: #0df2f2;
+    }
+  </style>
+<style data-purpose="background-styles">
+    /* Deep dark background with a very subtle grid or grain */
+    body {
+      background-color: #050505;
+      background-image: radial-gradient(circle at center, #0a1f1f 0%, #050505 100%);
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen font-sans text-white">
+<!-- BEGIN: HeroSection -->
+<main class="relative w-full h-screen flex flex-col items-center justify-center p-6" data-purpose="hero-container">
+<!-- Central Content Wrapper -->
+<div class="relative z-10 flex flex-col items-center text-center" data-purpose="brand-identity">
+<!-- BEGIN: BrandMark -->
+<!-- Stylized Icon: Greek Helmet / Automaton inspiration -->
+<div class="mb-6 glow-effect" data-purpose="brand-icon">
+<svg fill="none" height="120" viewbox="0 0 100 100" width="120" xmlns="http://www.w3.org/2000/svg">
+<!-- Main Helmet Crest / Automaton Head -->
+<path d="M50 5L20 30V65L50 95L80 65V30L50 5Z" fill="none" stroke="#0df2f2" stroke-width="2"></path>
+<!-- Inner Sharp Details -->
+<path d="M35 45L50 35L65 45" stroke="#0df2f2" stroke-width="2"></path>
+<path d="M50 35V75" stroke="#0df2f2" stroke-width="2"></path>
+<path d="M30 60H70" opacity="0.5" stroke="#0df2f2" stroke-width="1"></path>
+<!-- Circuit-like connection points -->
+<circle cx="50" cy="35" fill="#0df2f2" r="2"></circle>
+<circle cx="20" cy="30" fill="#0df2f2" r="1.5"></circle>
+<circle cx="80" cy="30" fill="#0df2f2" r="1.5"></circle>
+</svg>
+</div>
+<!-- END: BrandMark -->
+<!-- BEGIN: BrandTitle -->
+<!-- 'Talos' Title with modern, sharp execution -->
+<h1 class="talos-title text-7xl md:text-9xl font-bold text-brand mb-2" id="brand-title">
+        TALOS
+      </h1>
+<!-- END: BrandTitle -->
+<!-- Optional minimalist tagline for context -->
+<p class="text-brand/60 uppercase tracking-widest text-sm mt-4 font-light">Autonomous Intelligence</p>
+</div>
+<!-- Decorative Tech Frames -->
+<div class="absolute inset-0 pointer-events-none p-8 opacity-20">
+<div class="relative w-full h-full">
+<!-- Top Left -->
+<div class="tech-border-corner top-0 left-0 border-t-2 border-l-2"></div>
+<!-- Top Right -->
+<div class="tech-border-corner top-0 right-0 border-t-2 border-r-2"></div>
+<!-- Bottom Left -->
+<div class="tech-border-corner bottom-0 left-0 border-b-2 border-l-2"></div>
+<!-- Bottom Right -->
+<div class="tech-border-corner bottom-0 right-0 border-b-2 border-r-2"></div>
+</div>
+</div>
+</main>
+<!-- END: HeroSection -->
+</body></html>
