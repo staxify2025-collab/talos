@@ -97,6 +97,7 @@ OUTPUT FORMAT (strict JSON, no markdown, no explanations):
 RULES:
 - If a source field value cannot be found, set value to "" and confidence to 0.
 - If a target field cannot be located in the screenshot, set all boundingBox values to -1 and confidence to 0.
+- GROUNDING: Use the provided Tenant Knowledge Base to inform extraction rules (e.g., date formats, currency symbols, specific business logic mentioned in docs).
 - Return ONLY valid JSON. No markdown fences, no comments.`;
 // ─── Core Engine ────────────────────────────────────────────
 async function visionMap(request) {
@@ -122,14 +123,19 @@ async function visionMap(request) {
         }
         const schema = schemaDoc.data();
         const mappings = schema.mappings;
-        // 2. Build mapping description for the cache
-        const mappingDescription = mappings
-            .map((m, i) => `${i + 1}. Source field: "${m.sourceField}" → Target label: "${m.targetLabel}"${m.region
-            ? ` (hint region: x=${m.region.x}, y=${m.region.y}, w=${m.region.width}, h=${m.region.height})`
-            : ''}`)
+        // 3. Retrieve tenant knowledge base for grounding
+        const knowledgeSnap = await db
+            .collection('tenants')
+            .doc(tenantId)
+            .collection('knowledge')
+            .orderBy('createdAt', 'desc')
+            .limit(5)
+            .get();
+        const knowledgeBase = knowledgeSnap.docs
+            .map(d => `- ${d.data().name}: ${d.data().type} file content/metadata`)
             .join('\n');
-        const schemaContext = `Schema: "${schema.name}"\nTarget Application: "${schema.targetApp}"\n\nMappings:\n${mappingDescription}`;
-        // 3. Get or create cached context (screenshot + schema = WARM START)
+        const schemaContext = `Schema: "${schema.name}"\nTarget Application: "${schema.targetApp}"\n\nMappings:\n${mappingDescription}${knowledgeBase ? `\n\nTenant Knowledge Base (Grounding):\n${knowledgeBase}` : ''}`;
+        // 4. Get or create cached context (screenshot + schema = WARM START)
         const { cacheName, isNew } = await (0, cache_manager_1.getOrCreateCache)(tenantId, schemaId, targetScreenshotBase64, SYSTEM_INSTRUCTION, schemaContext);
         // 4. Generate content — only the NEW source document is sent fresh
         const client = new genai_1.GoogleGenAI({

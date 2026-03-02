@@ -36,12 +36,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tenantApi = exports.invalidateTenantCache = exports.processVisionMapping = void 0;
+exports.tenantApi = exports.getMigrationReport = exports.invalidateTenantCache = exports.processMigration = exports.processVisionMapping = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const cors_1 = __importDefault(require("cors"));
 admin.initializeApp();
 const vision_mapper_1 = require("./vision-mapper");
+const migration_engine_1 = require("./migration-engine");
+const report_generator_1 = require("./report-generator");
 const cache_manager_1 = require("./cache-manager");
 const tenant_management_1 = require("./tenant-management");
 const corsHandler = (0, cors_1.default)({ origin: true });
@@ -93,6 +95,23 @@ exports.processVisionMapping = (0, https_1.onRequest)({ memory: '2GiB', timeoutS
         }
     });
 });
+// ─── Data Migration Endpoint (Dual-Surface Controller) ──────
+exports.processMigration = (0, https_1.onRequest)({ memory: '2GiB', timeoutSeconds: 300, region: 'us-central1' }, (req, res) => {
+    corsHandler(req, res, async () => {
+        if (req.method !== 'POST') {
+            res.status(405).json({ error: 'Method not allowed' });
+            return;
+        }
+        try {
+            const result = await (0, migration_engine_1.processMigrationStep)(req.body);
+            res.status(result.success ? 200 : 500).json(result);
+        }
+        catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            res.status(500).json({ error: errMsg });
+        }
+    });
+});
 // ─── Cache Invalidation Endpoint ────────────────────────────
 exports.invalidateTenantCache = (0, https_1.onRequest)({ region: 'us-central1' }, (req, res) => {
     corsHandler(req, res, async () => {
@@ -111,6 +130,27 @@ exports.invalidateTenantCache = (0, https_1.onRequest)({ region: 'us-central1' }
                 success: true,
                 message: `Cache invalidated for tenant=${tenantId}${schemaId ? ` schema=${schemaId}` : ' (all schemas)'}`,
             });
+        }
+        catch (error) {
+            const errMsg = error instanceof Error ? error.message : String(error);
+            res.status(500).json({ error: errMsg });
+        }
+    });
+});
+exports.getMigrationReport = (0, https_1.onRequest)({ memory: '1GiB', timeoutSeconds: 300, region: 'us-central1' }, (req, res) => {
+    corsHandler(req, res, async () => {
+        if (req.method !== 'POST') {
+            res.status(405).json({ error: 'Method not allowed' });
+            return;
+        }
+        try {
+            const { tenantId, sessionId } = req.body;
+            if (!tenantId || !sessionId) {
+                res.status(400).json({ error: 'Missing tenantId or sessionId' });
+                return;
+            }
+            const result = await (0, report_generator_1.generateMigrationProof)(tenantId, sessionId);
+            res.status(200).json(result);
         }
         catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);

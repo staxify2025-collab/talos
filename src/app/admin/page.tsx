@@ -30,9 +30,9 @@ export default function AdminDashboard() {
 
   const stats = [
     { label: 'Active Tenants', value: loading ? '...' : (tenantCount?.toString() || '0'), icon: Users, color: 'var(--brand)' },
-    { label: 'Schemas Defined', value: '12', icon: FileCode, color: 'var(--brand)' },
-    { label: 'Jobs Processed', value: '142', icon: BarChart3, color: 'var(--accent-green)' },
-    { label: 'Revenue (MRR)', value: '$2.4k', icon: CreditCard, color: 'var(--brand)' },
+    { label: 'Schemas Defined', value: '0', icon: FileCode, color: 'var(--brand)' },
+    { label: 'Jobs Processed', value: '0', icon: BarChart3, color: 'var(--accent-green)' },
+    { label: 'Revenue (MRR)', value: '$0.00', icon: CreditCard, color: 'var(--brand)' },
   ];
 
   return (
@@ -213,10 +213,7 @@ export default function AdminDashboard() {
             <div className="glass" style={{ padding: '16px', fontSize: 11 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {[
-                  { time: 'now', event: 'Staxify Platform Initialized', type: 'info' },
-                  { time: '1m ago', event: 'Tenant Created: Staxify (Internal)', type: 'success' },
-                  { time: '5m ago', event: 'Auth Logic: Session Sync Complete', type: 'info' },
-                  { time: '12m ago', event: 'Cloud Functions: Deployment Success', type: 'success' },
+                  { time: 'now', event: 'System Online', type: 'success' },
                 ].map((log, i) => (
                   <div key={i} style={{ display: 'flex', gap: 8, paddingBottom: i === 3 ? 0 : 12, borderBottom: i === 3 ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>
                     <span style={{ color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{log.time}</span>

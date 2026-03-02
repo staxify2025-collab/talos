@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   CheckCircle2, 
   Circle, 
@@ -24,9 +24,9 @@ const STEPS = [
   { id: 'launch', title: 'Launch', icon: Rocket },
 ];
 
-export default function SetupWizard() {
-  const params = useParams();
-  const id = params?.id as string;
+function SetupWizardContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const router = useRouter();
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -42,11 +42,18 @@ export default function SetupWizard() {
       getTenant(id).then(data => {
         if (data) setTenant(data as unknown as Tenant);
         setLoading(false);
+      }).catch(err => {
+        console.error(err);
+        setLoading(false);
       });
+    } else {
+      setLoading(false);
     }
   }, [id]);
 
   const handleNext = async () => {
+    if (!id) return;
+
     if (currentStep === 1 && kbFiles.length > 0) {
       setUploading(true);
       try {
@@ -80,6 +87,15 @@ export default function SetupWizard() {
   };
 
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}><Loader2 className="spin" /></div>;
+
+  if (!id) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: 20 }}>
+        <p style={{ color: 'var(--text-muted)' }}>Missing Tenant ID</p>
+        <button onClick={() => router.push('/admin/tenants')} className="btn-outline">Back to Tenants</button>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', padding: '60px 20px' }}>
@@ -247,5 +263,13 @@ export default function SetupWizard() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SetupWizard() {
+  return (
+    <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}><Loader2 className="spin" /></div>}>
+      <SetupWizardContent />
+    </Suspense>
   );
 }

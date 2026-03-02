@@ -14,9 +14,7 @@ interface Plan {
   features: string[];
 }
 
-const mockPlans: Plan[] = [
-  { id: '1', name: 'Enterprise (Staxify Baseline)', price: '$0', interval: 'yr', tenants: 1, features: ['Internal Platform Access', 'Unlimited processing', 'Unlimited schemas'] },
-];
+const mockPlans: Plan[] = [];
 
 export default function SubscriptionsPage() {
   const router = useRouter();
@@ -137,21 +135,27 @@ export default function SubscriptionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {[
-                  { id: 'TX-9021', tenant: 'Staxify (Direct)', amount: '$0.00', date: '2024-03-01', status: 'internal' },
-                ].map((row, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                     <td style={{ padding: '12px 18px', fontSize: 12, color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{row.id}</td>
-                     <td style={{ padding: '12px 18px', fontSize: 13, color: 'var(--text-primary)', fontWeight: 600 }}>{row.tenant}</td>
-                     <td style={{ padding: '12px 18px', fontSize: 12, color: 'var(--text-secondary)' }}>{row.amount}</td>
-                     <td style={{ padding: '12px 18px', fontSize: 11, color: 'var(--text-muted)' }}>{row.date}</td>
-                     <td style={{ padding: '12px 18px' }}>
-                       <span style={{ padding: '2px 8px', borderRadius: 4, background: 'rgba(13, 242, 242, 0.1)', color: 'var(--brand)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase' }}>
-                         {row.status}
-                       </span>
-                     </td>
+                {mockPlans.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={{ padding: '24px 18px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
+                      No recent transactions found.
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  [].map((row: any, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                       <td style={{ padding: '12px 18px', fontSize: 12, color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{row.id}</td>
+                       <td style={{ padding: '12px 18px', fontSize: 13, color: 'var(--text-primary)', fontWeight: 600 }}>{row.tenant}</td>
+                       <td style={{ padding: '12px 18px', fontSize: 12, color: 'var(--text-secondary)' }}>{row.amount}</td>
+                       <td style={{ padding: '12px 18px', fontSize: 11, color: 'var(--text-muted)' }}>{row.date}</td>
+                       <td style={{ padding: '12px 18px' }}>
+                         <span style={{ padding: '2px 8px', borderRadius: 4, background: 'rgba(13, 242, 242, 0.1)', color: 'var(--brand)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase' }}>
+                           {row.status}
+                         </span>
+                       </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

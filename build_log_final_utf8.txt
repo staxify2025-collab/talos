@@ -1,0 +1,41 @@
+﻿
+> talos@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 5.6s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/17) ...
+  Generating static pages using 7 workers (4/17) 
+  Generating static pages using 7 workers (8/17) 
+  Generating static pages using 7 workers (12/17) 
+Γ£ô Generating static pages using 7 workers (17/17) in 963.4ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ Γùï /admin
+Γö£ Γùï /admin/analytics
+Γö£ Γùï /admin/migrations
+Γö£ ΓùÅ /admin/migrations/[id]
+Γöé Γöö /admin/migrations/test
+Γö£ Γùï /admin/schemas
+Γö£ Γùï /admin/settings
+Γö£ Γùï /admin/subscriptions
+Γö£ Γùï /admin/tenants
+Γö£ ΓùÅ /admin/tenants/[id]/setup
+Γöé Γöö /admin/tenants/test/setup
+Γö£ Γùï /admin/training
+Γö£ Γùï /dashboard
+Γö£ Γùï /login
+Γöö Γùï /signup
+
+
+Γùï  (Static)  prerendered as static content
+ΓùÅ  (SSG)     prerendered as static HTML (uses generateStaticParams)
+

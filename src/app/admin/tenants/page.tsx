@@ -49,7 +49,7 @@ export default function TenantsPage() {
       setShowModal(false);
       setNewTenant({ name: '', ownerName: '', ownerEmail: '', plan: 'enterprise' });
       // Redirect to onboarding wizard
-      router.push(`/admin/tenants/${tenant.id}/setup`);
+      router.push(`/admin/tenants/setup?id=${tenant.id}`);
     } catch (err) {
       console.error(err);
       alert('Failed to create tenant');
@@ -112,7 +112,7 @@ export default function TenantsPage() {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Opening modal');
+              console.log('Opening Tenants Modal');
               setShowModal(true);
             }}
             className="btn-primary" 

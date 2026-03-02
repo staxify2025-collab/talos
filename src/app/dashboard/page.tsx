@@ -60,12 +60,11 @@ export default function DashboardPage() {
     if (!authLoading && !user) router.push('/login');
   }, [authLoading, user, router]);
 
-  const [tenantId, setTenantId] = useState('staxify'); // Default to staxify for now
-
+  const [tenantId, setTenantId] = useState('3wF0ID7ezu1qBvjTKcLV'); // Default to Cahaba Restoration
   useEffect(() => {
     if (!user) return;
     // In a real production flow, we would fetch the user's profile from Firestore
-    // to get their assigned tenantId. For this phase, we use 'staxify' as the active context.
+    // to get their assigned tenantId. For this phase, we use Houston County as the active context.
     const unsub = subscribeJobs(tenantId, setJobs);
     return unsub;
   }, [user, tenantId]);
@@ -73,6 +72,9 @@ export default function DashboardPage() {
   useEffect(() => {
     setWebmcpAvailable(detectWebMCP());
   }, []);
+
+  const [uploadMode, setUploadMode] = useState<'url' | 'file'>('url');
+  const [urlInput, setUrlInput] = useState('');
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setSelectedFiles((prev) => [...prev, ...acceptedFiles]);
@@ -90,10 +92,22 @@ export default function DashboardPage() {
   });
 
   const handleProcess = async () => {
-    if (selectedFiles.length === 0) return;
+    if (uploadMode === 'file' && selectedFiles.length === 0) return;
+    if (uploadMode === 'url' && !urlInput.trim()) return;
+
     setUploading(true);
+
+    if (uploadMode === 'url') {
+      // Split by newline or comma, clean up whitespace, and filter out empties
+      const urls = urlInput.split(/[\n,]+/).map(u => u.trim()).filter(Boolean);
+      console.log('Processing batch URLs:', urls);
+      // Here you would trigger the backend extraction job for each URL
+    }
+
     await new Promise((r) => setTimeout(r, 1500));
-    setSelectedFiles([]);
+    
+    if (uploadMode === 'file') setSelectedFiles([]);
+    if (uploadMode === 'url') setUrlInput('');
     setUploading(false);
   };
 
@@ -133,130 +147,188 @@ export default function DashboardPage() {
           </div>
           {/* Compatibility Badge */}
           <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              padding: '3px 10px',
-              borderRadius: 6,
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: '0.05em',
-              background: webmcpAvailable ? 'rgba(34, 197, 94, 0.1)' : 'rgba(13, 242, 242, 0.08)',
-              color: webmcpAvailable ? 'var(--accent-green)' : 'var(--brand)',
-              border: `1px solid ${webmcpAvailable ? 'rgba(34,197,94,0.2)' : 'var(--border-subtle)'}`,
-            }}
-          >
-            {webmcpAvailable ? <Plug size={10} /> : <Eye size={10} />}
-            {webmcpAvailable ? 'STRUCTURED' : 'VISION'}
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Link
-            href="/admin/analytics"
-            style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: 12, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 5, letterSpacing: '0.04em', transition: 'color 0.2s' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--brand)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            <BarChart3 size={13} /> Analytics
-          </Link>
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              border: '1px solid var(--border-glow)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 11,
-              fontWeight: 700,
-              color: 'var(--brand)',
-            }}
-          >
-            {user.displayName?.[0]?.toUpperCase() ?? user.email?.[0]?.toUpperCase() ?? '?'}
-          </div>
-          <button
-            onClick={() => signOut()}
-            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 4, transition: 'color 0.2s' }}
-            title="Sign out"
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--brand)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            <LogOut size={14} />
-          </button>
-        </div>
-      </header>
-
-      <div className="container" style={{ paddingTop: 36, paddingBottom: 60, maxWidth: 860 }}>
-        {/* Upload Section */}
-        <div className="glass" style={{ padding: 28, marginBottom: 28 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
-            <Zap size={16} style={{ color: 'var(--brand)' }} />
-            Process Documents
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 20 }}>
-            Upload source files for extraction and mapping.
-          </p>
-
-          <div
-            {...getRootProps()}
-            style={{
-              border: `1px dashed ${isDragActive ? 'var(--brand)' : 'var(--border-subtle)'}`,
-              borderRadius: 8,
-              padding: 28,
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.3s',
-              background: isDragActive ? 'rgba(13, 242, 242, 0.04)' : 'transparent',
-              marginBottom: selectedFiles.length > 0 ? 14 : 0,
-            }}
-          >
-            <input {...getInputProps()} />
-            <Upload size={22} style={{ color: 'var(--brand)', marginBottom: 10, opacity: 0.7 }} />
-            <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-primary)' }}>
-              {isDragActive ? 'Drop files here' : 'Drag & drop, or click to browse'}
-            </p>
-            <p style={{ color: 'var(--text-muted)', fontSize: 11 }}>
-              PDF, PNG, JPEG, CSV · Max 100MB
-            </p>
-          </div>
-
-          {selectedFiles.length > 0 && (
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
-                {selectedFiles.map((f, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '8px 12px',
-                      background: 'rgba(13, 242, 242, 0.04)',
-                      borderRadius: 6,
-                      fontSize: 12,
-                    }}
-                  >
-                    <FileText size={13} style={{ color: 'var(--brand)', flexShrink: 0, opacity: 0.7 }} />
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</span>
-                    <span style={{ color: 'var(--text-muted)', fontSize: 11, flexShrink: 0 }}>{formatSize(f.size)}</span>
-                  </div>
-                ))}
-              </div>
-              <button
-                className="btn-primary"
-                onClick={handleProcess}
-                disabled={uploading}
-                style={{ padding: '9px 22px', fontSize: 12, display: 'flex', alignItems: 'center', gap: 8 }}
-              >
-                {uploading ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Upload size={14} />}
-                {uploading ? 'Processing...' : `Process ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''}`}
-              </button>
-            </>
+             style={{
+               display: 'inline-flex',
+               alignItems: 'center',
+               gap: 5,
+               padding: '3px 10px',
+               borderRadius: 6,
+               fontSize: 10,
+               fontWeight: 700,
+               letterSpacing: '0.05em',
+               background: webmcpAvailable ? 'rgba(34, 197, 94, 0.1)' : 'rgba(13, 242, 242, 0.08)',
+               color: webmcpAvailable ? 'var(--accent-green)' : 'var(--brand)',
+               border: `1px solid ${webmcpAvailable ? 'rgba(34,197,94,0.2)' : 'var(--border-subtle)'}`,
+             }}
+           >
+             {webmcpAvailable ? <Plug size={10} /> : <Eye size={10} />}
+             {webmcpAvailable ? 'STRUCTURED' : 'VISION'}
+           </div>
+         </div>
+ 
+         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+           <Link
+             href="/admin/analytics"
+             style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: 12, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 5, letterSpacing: '0.04em', transition: 'color 0.2s' }}
+             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--brand)')}
+             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+           >
+             <BarChart3 size={13} /> Analytics
+           </Link>
+           <div
+             style={{
+               width: 28,
+               height: 28,
+               borderRadius: '50%',
+               border: '1px solid var(--border-glow)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               fontSize: 11,
+               fontWeight: 700,
+               color: 'var(--brand)',
+             }}
+           >
+             {user.displayName?.[0]?.toUpperCase() ?? user.email?.[0]?.toUpperCase() ?? '?'}
+           </div>
+           <button
+             onClick={() => signOut()}
+             style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 4, transition: 'color 0.2s' }}
+             title="Sign out"
+             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--brand)')}
+             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+           >
+             <LogOut size={14} />
+           </button>
+         </div>
+       </header>
+ 
+       <div className="container" style={{ paddingTop: 36, paddingBottom: 60, maxWidth: 860 }}>
+         {/* Upload Section */}
+         <div className="glass" style={{ padding: 28, marginBottom: 28 }}>
+           <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+             <Zap size={16} style={{ color: 'var(--brand)' }} />
+             Start AI Extraction
+           </h2>
+           <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 20 }}>
+             Upload source files or provide a web URL for extraction and mapping.
+           </p>
+ 
+           <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+             <button
+               onClick={() => setUploadMode('url')}
+               style={{
+                 flex: 1,
+                 padding: '10px 16px',
+                 borderRadius: 8,
+                 border: '1px solid var(--border-subtle)',
+                 background: uploadMode === 'url' ? 'rgba(13, 242, 242, 0.04)' : 'transparent',
+                 color: uploadMode === 'url' ? 'var(--brand)' : 'var(--text-muted)',
+                 fontSize: 13,
+                 fontWeight: 600,
+                 cursor: 'pointer',
+               }}
+             >
+               Web URL Extraction
+             </button>
+             <button
+               onClick={() => setUploadMode('file')}
+               style={{
+                 flex: 1,
+                 padding: '10px 16px',
+                 borderRadius: 8,
+                 border: '1px solid var(--border-subtle)',
+                 background: uploadMode === 'file' ? 'rgba(13, 242, 242, 0.04)' : 'transparent',
+                 color: uploadMode === 'file' ? 'var(--brand)' : 'var(--text-muted)',
+                 fontSize: 13,
+                 fontWeight: 600,
+                 cursor: 'pointer',
+               }}
+             >
+               File Upload (PDF/Image)
+             </button>
+           </div>
+ 
+          {uploadMode === 'url' ? (
+           <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Source Application URLs (Paste multiple URLs separated by commas or lines)</label>
+              <textarea 
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder={"https://leap.example.com/job/123\nhttps://leap.example.com/job/456"} 
+                rows={4}
+                style={{ 
+                  width: '100%', 
+                  padding: '12px 16px', 
+                  borderRadius: 8, 
+                  border: '1px solid var(--border-subtle)', 
+                  background: 'rgba(0,0,0,0.5)', 
+                  color: 'var(--text-primary)',
+                  fontSize: 13,
+                  resize: 'vertical'
+                }} 
+              />
+           </div>
+          ) : (
+            <div style={{ marginBottom: 16 }}>
+             <div
+               {...getRootProps()}
+               style={{
+                 border: `1px dashed ${isDragActive ? 'var(--brand)' : 'var(--border-subtle)'}`,
+                 borderRadius: 8,
+                 padding: 28,
+                 textAlign: 'center',
+                 cursor: 'pointer',
+                 transition: 'all 0.3s',
+                 background: isDragActive ? 'rgba(13, 242, 242, 0.04)' : 'transparent',
+                 marginBottom: selectedFiles.length > 0 ? 14 : 0,
+               }}
+             >
+               <input {...getInputProps()} />
+               <Upload size={22} style={{ color: 'var(--brand)', marginBottom: 10, opacity: 0.7 }} />
+               <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-primary)' }}>
+                 {isDragActive ? 'Drop files here' : 'Drag & drop, or click to browse'}
+               </p>
+               <p style={{ color: 'var(--text-muted)', fontSize: 11 }}>
+                 PDF, PNG, JPEG, CSV · Max 100MB
+               </p>
+             </div>
+ 
+             {selectedFiles.length > 0 && (
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
+                   {selectedFiles.map((f, i) => (
+                     <div
+                       key={i}
+                       style={{
+                         display: 'flex',
+                         alignItems: 'center',
+                         gap: 10,
+                         padding: '8px 12px',
+                         background: 'rgba(13, 242, 242, 0.04)',
+                         borderRadius: 6,
+                         fontSize: 12,
+                       }}
+                     >
+                       <FileText size={13} style={{ color: 'var(--brand)', flexShrink: 0, opacity: 0.7 }} />
+                       <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</span>
+                       <span style={{ color: 'var(--text-muted)', fontSize: 11, flexShrink: 0 }}>{formatSize(f.size)}</span>
+                     </div>
+                   ))}
+                 </div>
+             )}
+            </div>
           )}
-        </div>
+ 
+           <button
+             className="btn-primary"
+             onClick={handleProcess}
+             disabled={uploading}
+             style={{ width: '100%', padding: '12px', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+           >
+             {uploading ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Zap size={16} />}
+             {uploading ? 'Initializing Agent...' : `Start Autonomous Agent ${uploadMode === 'file' && selectedFiles.length > 0 ? `(${selectedFiles.length} files)` : ''}`}
+           </button>
+         </div>
 
         {/* Job History */}
         <h2 style={{ fontSize: 14, fontWeight: 700, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
